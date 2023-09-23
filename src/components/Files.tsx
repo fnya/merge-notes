@@ -84,7 +84,7 @@ export const Files = (props: any) => {
 	return (
 		<div>
 			<Title title={title} />
-			<div>
+			<div onDragLeave={() => alert(1)} className="note">
 				{files.map((file: TFile) => {
 					return (
 						<File
@@ -98,10 +98,10 @@ export const Files = (props: any) => {
 					);
 				})}
 			</div>
-			<div>*Drag and drop to change order</div>
-			<br />
-			<br />
-			<button onClick={mergeNotes}>Merge</button>
+			<div className="explain">*Drag and drop to change order</div>
+			<div className="button">
+				<button onClick={mergeNotes}>Merge</button>
+			</div>
 		</div>
 	);
 };

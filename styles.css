@@ -1,8 +1,25 @@
-/*
+.note {
+	margin: 10px;
+	padding: 10px;
+	border: 1px solid;
+	height: 150px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.explain {
+	margin: 5px;
+}
 
-If your plugin does not need CSS, delete this file.
+.button {
+	width: 100%;
+	text-align: right;
+}
 
-*/
+.file {
+	width: 100%;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	padding: 6px;
+}

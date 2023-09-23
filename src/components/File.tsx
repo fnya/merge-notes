@@ -20,7 +20,7 @@ export const File = (props: any) => {
 			onMouseMove={mouseMove}
 			onMouseUp={mouseUp}
 		>
-			<div>{file.basename}</div>
+			<div className="file">{file.basename}</div>
 		</div>
 	);
 };
