@@ -7,6 +7,10 @@ export const File = (props: any) => {
 
 	useEffect(() => {
 		store.register({ id: file.path });
+
+		return () => {
+			store.unregister(file.path);
+		};
 	}, []);
 
 	return (
@@ -16,7 +20,7 @@ export const File = (props: any) => {
 			onMouseMove={mouseMove}
 			onMouseUp={mouseUp}
 		>
-			<li>{file.basename}</li>
+			<div>{file.basename}</div>
 		</div>
 	);
 };

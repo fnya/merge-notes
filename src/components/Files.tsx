@@ -3,7 +3,7 @@ import { File } from "./File";
 import { store, DnD } from "@dflex/dnd";
 import { TFile, Notice } from "obsidian";
 import { Title } from "./Title";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export const Files = (props: any) => {
 	const files = props.files as TFile[];
@@ -84,7 +84,7 @@ export const Files = (props: any) => {
 	return (
 		<div>
 			<Title title={title} />
-			<ul>
+			<div>
 				{files.map((file: TFile) => {
 					return (
 						<File
@@ -97,8 +97,8 @@ export const Files = (props: any) => {
 						/>
 					);
 				})}
-			</ul>
-			*Drag and drop to change order
+			</div>
+			<div>*Drag and drop to change order</div>
 			<br />
 			<br />
 			<button onClick={mergeNotes}>Merge</button>
