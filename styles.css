@@ -34,3 +34,22 @@
 	overflow: hidden;
 	padding: 6px;
 }
+
+[data-tooltip]::after {
+	content: attr(data-tooltip);
+	position: absolute;
+	left: 200px;
+	width: 320px;
+	white-space: wrap;
+	opacity: 0;
+	font-size: 16px;
+	background-color: #f0e68c;
+	color: #111;
+	padding: 1px 1px;
+	border: 1px solid #c0c0c0;
+	border-radius: 5px;
+}
+
+[data-tooltip]:hover::after {
+	opacity: 1;
+}

@@ -1,7 +1,7 @@
 import { CSS } from "@dnd-kit/utilities";
 import { TFile } from "obsidian";
 import { useSortable } from "@dnd-kit/sortable";
-import React from "react";
+import React, { useState } from "react";
 
 export const File = (props: any) => {
 	const file = props.file as TFile;
@@ -21,7 +21,9 @@ export const File = (props: any) => {
 			{...attributes}
 			{...listeners}
 		>
-			<div className="file">{file.basename}</div>
+			<div className="file" data-tooltip={file.basename}>
+				{file.basename}
+			</div>
 		</div>
 	);
 };
