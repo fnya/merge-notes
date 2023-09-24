@@ -133,7 +133,7 @@ export const Files = (props: any) => {
 			</div>
 			<div className="explain">*Drag and drop to change order</div>
 			<div className="button">
-				<button onClick={mergeNotes}>Merge</button>
+				<button onClick={mergeNotes}>Merge Nots</button>
 			</div>
 		</div>
 	);
