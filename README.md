@@ -35,3 +35,7 @@ The merged note will be created in the same folder as the first note in the sele
 ## Limitations
 
 Merged notes are not currently deleted. Delete function will be supported at a later date.
+
+## Open source libraries
+
+- [@dnd-kit](https://docs.dndkit.com/)
