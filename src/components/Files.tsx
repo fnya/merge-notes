@@ -1,64 +1,50 @@
-import { DragAndDropState } from "../types/DragAndDropState";
 import { File } from "./File";
-import { store, DnD } from "@dflex/dnd";
 import { TFile, Notice } from "obsidian";
 import { Title } from "./Title";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import {
+	DndContext,
+	closestCenter,
+	KeyboardSensor,
+	PointerSensor,
+	useSensor,
+	useSensors,
+} from "@dnd-kit/core";
+import {
+	arrayMove,
+	SortableContext,
+	sortableKeyboardCoordinates,
+	verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 export const Files = (props: any) => {
 	const files = props.files as TFile[];
 	const { app, modal } = props;
-	const [title, setTitle] = useState(files[0].basename);
-	const [dragState, setDragState] = useState<DragAndDropState>({
-		dflexDnD: null,
-	});
 
-	const mouseDown = (e: MouseEvent) => {
-		const { button, clientX, clientY } = e;
-		const target = (e.target as HTMLElement).parentNode as HTMLElement;
-
-		// Avoid right mouse click and ensure id
-		if (typeof button === "number" && button === 0) {
-			setDragState({
-				dflexDnD: new DnD(target.id, {
-					x: clientX,
-					y: clientY,
-				}),
-			});
-		}
+	const sensors = useSensors(
+		useSensor(PointerSensor),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates,
+		})
+	);
+	const sortFiles = (files: TFile[]) => {
+		return files.sort((a, b) => a.basename.localeCompare(b.basename));
 	};
-
-	const mouseMove = (e: MouseEvent) => {
-		if (dragState.dflexDnD) {
-			const { clientX, clientY } = e;
-			dragState.dflexDnD.dragAt(clientX, clientY);
-			setDragState({
-				dflexDnD: dragState.dflexDnD,
-			});
-		}
-	};
-
-	const mouseUp = (e: MouseEvent) => {
-		if (dragState.dflexDnD) {
-			dragState.dflexDnD.endDragging();
-			setDragState({
-				dflexDnD: null,
-			});
-		}
-	};
+	const [items, setItems] = useState(sortFiles(files).map((file) => file.path));
+	const [title, setTitle] = useState(sortFiles(files)[0].basename);
 
 	const mergeNotes = async () => {
 		let fileContent = "";
 
 		await Promise.all(
-			Array.from(files).map(async (file) => {
-				const outFile = files.find((f) => file.path === f.path);
+			Array.from(items).map(async (item) => {
+				const exportFile = files.find((file) => file.path === item)!;
 
-				if (outFile) {
+				if (exportFile) {
 					try {
-						const eachConent = await app.vault.adapter.read(outFile.path);
-						fileContent += outFile.basename + "\n";
-						fileContent += eachConent + "\n";
+						const eachConent = await app.vault.adapter.read(exportFile.path);
+						fileContent += exportFile.basename + "\n";
+						fileContent += eachConent + "\n\n\n";
 					} catch (e) {
 						console.log(e);
 					}
@@ -81,22 +67,35 @@ export const Files = (props: any) => {
 		modal.close();
 	};
 
+	const handleDragEnd = (event: any) => {
+		const { active, over } = event;
+
+		if (active.id !== over.id) {
+			setItems((items) => {
+				const oldIndex = items.indexOf(active.id);
+				const newIndex = items.indexOf(over.id);
+
+				return arrayMove(items, oldIndex, newIndex);
+			});
+		}
+	};
+
 	return (
 		<div>
-			<Title title={title} />
-			<div onDragLeave={() => alert(1)} className="note">
-				{files.map((file: TFile) => {
-					return (
-						<File
-							key={file.path}
-							file={file}
-							store={store}
-							mouseDown={mouseDown}
-							mouseMove={mouseMove}
-							mouseUp={mouseUp}
-						/>
-					);
-				})}
+			<Title title={title} setTitle={setTitle} />
+			<div className="note">
+				<DndContext
+					sensors={sensors}
+					collisionDetection={closestCenter}
+					onDragEnd={handleDragEnd}
+				>
+					<SortableContext items={items} strategy={verticalListSortingStrategy}>
+						{items.map((id) => {
+							const localFile = files.find((file) => file.path === id)!;
+							return <File key={id} id={id} file={localFile} />;
+						})}
+					</SortableContext>
+				</DndContext>
 			</div>
 			<div className="explain">*Drag and drop to change order</div>
 			<div className="button">

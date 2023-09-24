@@ -1,24 +1,25 @@
+import { CSS } from "@dnd-kit/utilities";
 import { TFile } from "obsidian";
-import React, { useEffect } from "react";
+import { useSortable } from "@dnd-kit/sortable";
+import React from "react";
 
 export const File = (props: any) => {
 	const file = props.file as TFile;
-	const { store, mouseDown, mouseMove, mouseUp } = props;
+	const { attributes, listeners, setNodeRef, transform, transition } =
+		useSortable({ id: props.id });
 
-	useEffect(() => {
-		store.register({ id: file.path });
-
-		return () => {
-			store.unregister(file.path);
-		};
-	}, []);
+	const style = {
+		transform: CSS.Transform.toString(transform),
+		transition,
+	};
 
 	return (
 		<div
 			id={file.path}
-			onMouseDown={mouseDown}
-			onMouseMove={mouseMove}
-			onMouseUp={mouseUp}
+			ref={setNodeRef}
+			style={style}
+			{...attributes}
+			{...listeners}
 		>
 			<div className="file">{file.basename}</div>
 		</div>

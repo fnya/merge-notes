@@ -1,7 +1,6 @@
 import { App, Modal, TFile } from "obsidian";
 import { MergeNotesView } from "./MergeNotesView";
 import { Root, createRoot } from "react-dom/client";
-import { store } from "@dflex/dnd";
 import React from "react";
 
 export class MergeNotesModal extends Modal {
@@ -32,9 +31,6 @@ export class MergeNotesModal extends Modal {
 	onClose() {
 		const { contentEl } = this;
 		contentEl.empty();
-		this.files.map((file) => {
-			store.unregister(file.path);
-		});
 		this.files = [];
 		this.root?.unmount();
 	}
