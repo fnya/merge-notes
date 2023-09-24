@@ -20,7 +20,6 @@ import {
 export const Files = (props: any) => {
 	const files = props.files as TFile[];
 	const { app, modal } = props;
-
 	const sensors = useSensors(
 		useSensor(PointerSensor),
 		useSensor(KeyboardSensor, {
@@ -32,6 +31,8 @@ export const Files = (props: any) => {
 	};
 	const [items, setItems] = useState(sortFiles(files).map((file) => file.path));
 	const [title, setTitle] = useState(sortFiles(files)[0].basename);
+	const [showTooltip, setShowTooltip] = useState(false);
+	const [tooltip, setTooltip] = useState("");
 
 	const getNormalizedTitle = (title?: string) => {
 		if (!title || title.length === 0) {
@@ -123,15 +124,24 @@ export const Files = (props: any) => {
 					collisionDetection={closestCenter}
 					onDragEnd={handleDragEnd}
 				>
+					<div className={showTooltip ? "tooltip" : "hide"}>{tooltip}</div>
 					<SortableContext items={items} strategy={verticalListSortingStrategy}>
 						{items.map((id) => {
 							const localFile = files.find((file) => file.path === id)!;
-							return <File key={id} id={id} file={localFile} />;
+							return (
+								<File
+									key={id}
+									id={id}
+									file={localFile}
+									setShowTooltip={setShowTooltip}
+									setTooltip={setTooltip}
+								/>
+							);
 						})}
 					</SortableContext>
 				</DndContext>
 			</div>
-			<div className="explain">*Drag and drop to change order</div>
+			<div className="explain">*drag and drop to change order</div>
 			<div className="button">
 				<button onClick={mergeNotes}>Merge Nots</button>
 			</div>

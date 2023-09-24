@@ -1,3 +1,8 @@
+.container {
+	height: 200px;
+	overflow-y: hidden;
+}
+
 .titleLabel {
 	margin: 10px;
 	padding: 10px;
@@ -16,6 +21,7 @@
 	height: 150px;
 	overflow-y: auto;
 	overflow-x: hidden;
+	z-index: 999;
 }
 
 .explain {
@@ -35,7 +41,28 @@
 	padding: 6px;
 }
 
-[data-tooltip]::after {
+.tooltip {
+	position: absolute;
+	top: 50px;
+	left: 320px;
+	width: 480px;
+	white-space: wrap;
+	opacity: 0;
+	font-size: 16px;
+	text-align: left;
+	background-color: #f0e68c;
+	color: #111;
+	padding: 3px;
+	border: 1px solid #c0c0c0;
+	border-radius: 5px;
+	z-index: 1;
+}
+
+.hide {
+	display: none;
+}
+
+/* [data-tooltip]::after {
 	content: attr(data-tooltip);
 	position: absolute;
 	left: 200px;
@@ -52,4 +79,4 @@
 
 [data-tooltip]:hover::after {
 	opacity: 1;
-}
+} */

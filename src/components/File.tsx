@@ -1,16 +1,27 @@
 import { CSS } from "@dnd-kit/utilities";
-import { TFile } from "obsidian";
+import { TFile, setTooltip } from "obsidian";
 import { useSortable } from "@dnd-kit/sortable";
-import React, { useState } from "react";
+import React from "react";
 
 export const File = (props: any) => {
 	const file = props.file as TFile;
+	const { setShowTooltip, setTooltip } = props;
 	const { attributes, listeners, setNodeRef, transform, transition } =
 		useSortable({ id: props.id });
 
 	const style = {
 		transform: CSS.Transform.toString(transform),
 		transition,
+	};
+
+	const show = () => {
+		setTooltip(file.basename);
+		setShowTooltip(true);
+	};
+
+	const hide = () => {
+		setTooltip("");
+		setShowTooltip(false);
 	};
 
 	return (
@@ -20,10 +31,10 @@ export const File = (props: any) => {
 			style={style}
 			{...attributes}
 			{...listeners}
+			onMouseEnter={show}
+			onMouseLeave={hide}
 		>
-			<div className="file" data-tooltip={file.basename}>
-				{file.basename}
-			</div>
+			<div className="file">{file.basename}</div>
 		</div>
 	);
 };

@@ -1,6 +1,6 @@
 {
 	"name": "merge-notes",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Merge the selected notes.",
 	"main": "main.js",
 	"scripts": {
