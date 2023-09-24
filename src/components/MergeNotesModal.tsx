@@ -1,4 +1,4 @@
-import { App, Modal, TFile } from "obsidian";
+import { App, Modal, TFile, Notice } from "obsidian";
 import { MergeNotesView } from "./MergeNotesView";
 import { Root, createRoot } from "react-dom/client";
 import React from "react";
@@ -21,6 +21,13 @@ export class MergeNotesModal extends Modal {
 	};
 
 	onOpen() {
+		const isContainFolder = this.files.some((file) => !file.stat);
+		if (isContainFolder) {
+			new Notice("Merge Notes does not support folders.");
+			this.close();
+			return;
+		}
+
 		const root = this.createRoot();
 		this.root = createRoot(root);
 		this.root.render(

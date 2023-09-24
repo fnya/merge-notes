@@ -54,6 +54,16 @@ export const Files = (props: any) => {
 		);
 	};
 
+	const getDirectoryPath = () => {
+		const dir = sortFiles(files)[0].path.split("/").slice(0, -1).join("/");
+
+		if (dir === "") {
+			return "";
+		}
+
+		return dir + "/";
+	};
+
 	const mergeNotes = async () => {
 		let fileContent = "";
 
@@ -74,7 +84,10 @@ export const Files = (props: any) => {
 		);
 
 		try {
-			await app.vault.create(getNormalizedTitle(title) + ".md", fileContent);
+			await app.vault.create(
+				getDirectoryPath() + getNormalizedTitle(title) + ".md",
+				fileContent
+			);
 			new Notice("Merge completed");
 		} catch (e) {
 			console.log(e);
