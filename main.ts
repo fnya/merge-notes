@@ -6,7 +6,7 @@ export default class MergeNotesPlugin extends Plugin {
 		this.registerEvent(
 			this.app.workspace.on("files-menu", (menu, files) => {
 				menu.addItem((item) => {
-					item.setTitle("Merge notes").onClick(async () => {
+					item.setTitle("Merge Notes").onClick(async () => {
 						new MergeNotesModal(this.app, files as TFile[]).open();
 					});
 				});
