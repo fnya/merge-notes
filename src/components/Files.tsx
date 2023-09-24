@@ -33,6 +33,27 @@ export const Files = (props: any) => {
 	const [items, setItems] = useState(sortFiles(files).map((file) => file.path));
 	const [title, setTitle] = useState(sortFiles(files)[0].basename);
 
+	const getNormalizedTitle = (title?: string) => {
+		if (!title || title.length === 0) {
+			return "unnamed";
+		}
+
+		return (
+			title
+				// for Mac
+				.replace(/:/g, " ")
+				.replace(/\./g, " ")
+				// for Windows
+				.replace(/¥/g, " ")
+				.replace(/\//g, " ")
+				.replace(/\*/g, " ")
+				.replace(/\?/g, " ")
+				.replace(/</g, " ")
+				.replace(/>/g, " ")
+				.replace(/\|/g, " ")
+		);
+	};
+
 	const mergeNotes = async () => {
 		let fileContent = "";
 
@@ -53,7 +74,7 @@ export const Files = (props: any) => {
 		);
 
 		try {
-			await app.vault.create(title + ".md", fileContent);
+			await app.vault.create(getNormalizedTitle(title) + ".md", fileContent);
 			new Notice("Merge completed");
 		} catch (e) {
 			console.log(e);
