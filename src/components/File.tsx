@@ -1,5 +1,5 @@
 import { CSS } from "@dnd-kit/utilities";
-import { TFile, setTooltip } from "obsidian";
+import { TFile } from "obsidian";
 import { useSortable } from "@dnd-kit/sortable";
 import React from "react";
 
