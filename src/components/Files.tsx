@@ -78,7 +78,7 @@ export const Files = (props: any) => {
 						fileContent += exportFile.basename + "\n";
 						fileContent += eachConent + "\n\n\n";
 					} catch (e) {
-						console.log(e);
+						console.error(e);
 					}
 				}
 			})
@@ -91,7 +91,7 @@ export const Files = (props: any) => {
 			);
 			new Notice("Merge completed");
 		} catch (e) {
-			console.log(e);
+			console.error(e);
 			if (e.message === "File already exists") {
 				new Notice(e.message);
 			} else {
