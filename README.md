@@ -6,7 +6,7 @@
 
 Select the notes you want to merge in the file explorer.
 
-Right click on the selection and select `Merge Notes`.
+Right click on the selection and select `Merge notes`.
 
 <img src="resources/image01.png" width="200">
 
@@ -22,7 +22,7 @@ Notes to be merged can be rearranged by drag-and-drop.
 
 <img src="resources/image04.png" width="480">
 
-Click the `Merge Notes` button to execute the merge.
+Click the `Merge notes` button to execute the merge.
 
 <img src="resources/image05.png" width="120">
 

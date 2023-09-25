@@ -23,7 +23,7 @@ export class MergeNotesModal extends Modal {
 	onOpen() {
 		const isContainFolder = this.files.some((file) => !file.stat);
 		if (isContainFolder) {
-			new Notice("Merge Notes does not support folders.");
+			new Notice("Merge notes does not support folders.");
 			this.close();
 			return;
 		}
