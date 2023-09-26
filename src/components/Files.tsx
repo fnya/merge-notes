@@ -118,13 +118,15 @@ export const Files = (props: any) => {
 	return (
 		<div>
 			<Title title={title} setTitle={setTitle} />
-			<div className="note">
+			<div className="mergeNotesNote">
+				<div className={showTooltip ? "mergeNotesTooltip" : "mergeNotesHide"}>
+					{tooltip}
+				</div>
 				<DndContext
 					sensors={sensors}
 					collisionDetection={closestCenter}
 					onDragEnd={handleDragEnd}
 				>
-					<div className={showTooltip ? "tooltip" : "hide"}>{tooltip}</div>
 					<SortableContext items={items} strategy={verticalListSortingStrategy}>
 						{items.map((id) => {
 							const localFile = files.find((file) => file.path === id)!;
@@ -141,8 +143,8 @@ export const Files = (props: any) => {
 					</SortableContext>
 				</DndContext>
 			</div>
-			<div className="explain">*drag and drop to change order</div>
-			<div className="button">
+			<div className="mergeNotesExplain">*drag and drop to change order</div>
+			<div className="mergeNotesButton">
 				<button onClick={mergeNotes}>Merge notes</button>
 			</div>
 		</div>

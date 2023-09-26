@@ -8,12 +8,12 @@ export const Title = (props: any) => {
 
 	return (
 		<div>
-			<label htmlFor="title" className="titleLabel">
+			<label htmlFor="title" className="mergeNotesTitleLabel">
 				Title after merged:
 			</label>
 			<input
 				type="text"
-				className="title"
+				className="mergeNotesTitle"
 				value={title}
 				onChange={(e) => setTitile(e.target.value)}
 			/>

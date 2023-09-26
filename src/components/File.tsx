@@ -34,7 +34,7 @@ export const File = (props: any) => {
 			onMouseEnter={show}
 			onMouseLeave={hide}
 		>
-			<div className="file">{file.basename}</div>
+			<div className="mergeNotesFile">{file.basename}</div>
 		</div>
 	);
 };
