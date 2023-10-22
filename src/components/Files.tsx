@@ -30,7 +30,9 @@ export const Files = (props: any) => {
 		return files.sort((a, b) => a.basename.localeCompare(b.basename));
 	};
 	const [items, setItems] = useState(sortFiles(files).map((file) => file.path));
-	const [title, setTitle] = useState(sortFiles(files)[0].basename);
+	const [title, setTitle] = useState(
+		"Merged - " + sortFiles(files)[0].basename
+	);
 	const [showTooltip, setShowTooltip] = useState(false);
 	const [tooltip, setTooltip] = useState("");
 
