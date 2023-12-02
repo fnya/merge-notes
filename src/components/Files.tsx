@@ -1,5 +1,5 @@
 import { File } from "./File";
-import { TFile, Notice } from "obsidian";
+import { TFile, Notice, parseYaml } from "obsidian";
 import { Title } from "./Title";
 import React, { useState } from "react";
 import {
@@ -16,6 +16,8 @@ import {
 	sortableKeyboardCoordinates,
 	verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+
+const PROPERTIES_REGEX = /---\n([\s\S]*?)\n---/;
 
 export const Files = (props: any) => {
 	const files = props.files as TFile[];
@@ -67,8 +69,92 @@ export const Files = (props: any) => {
 		return dir + "/";
 	};
 
+	const getProperties = (content: string) => {
+		if (content.match(PROPERTIES_REGEX)) {
+			return parseYaml(content.match(PROPERTIES_REGEX)![1]);
+		}
+
+		return undefined;
+	};
+
+	const getExcludePropertiesContent = (content: string) => {
+		if (content.match(PROPERTIES_REGEX)) {
+			return content.replace(PROPERTIES_REGEX, "");
+		}
+
+		return content;
+	};
+
+	const hasProperties = (content: string) => {
+		return content.startsWith("---\n") && content.indexOf("---\n", 4) !== -1;
+	};
+
+	const createPropertiesContent = (
+		content: string,
+		title: string,
+		item: string,
+		properties: any[],
+		tags: any[]
+	) => {
+		let fileContent = "";
+
+		const postfix = new String(items.indexOf(item) + 1);
+		const eachProperties = getProperties(content);
+
+		for (const key in eachProperties) {
+			if (key.toLowerCase() === "tags") {
+				eachProperties[key].forEach((tag: string) => {
+					const addTag = tag.startsWith("#") ? tag.substring(1) : tag;
+					if (tags.indexOf(addTag) === -1) {
+						tags.push(addTag);
+					}
+				});
+			} else {
+				const existProperty = properties.some((property) =>
+					property.hasOwnProperty(key)
+				);
+
+				const property: any = {};
+
+				if (existProperty) {
+					property[key + postfix] = eachProperties[key];
+					properties.push(property);
+				} else {
+					property[key] = eachProperties[key];
+					properties.push(property);
+				}
+			}
+		}
+
+		fileContent += `# ${title}\n`;
+		fileContent += getExcludePropertiesContent(content) + "\n\n\n";
+
+		return fileContent;
+	};
+
+	const createPropertiesString = (properties: any[]) => {
+		let propertiesString = "";
+
+		properties.forEach((property) => {
+			for (const key in property) {
+				if (property[key] instanceof Array) {
+					const proertyValue = Array.from(property[key])
+						.map((value) => `"${value}"`)
+						.join(",");
+					propertiesString += `${key}: [${proertyValue}]\n`;
+				} else {
+					propertiesString += `${key}: ${property[key]}\n`;
+				}
+			}
+		});
+
+		return propertiesString;
+	};
+
 	const mergeNotes = async () => {
 		let fileContent = "";
+		const properties: any[] = [];
+		const tags: any[] = [];
 
 		await Promise.all(
 			Array.from(items).map(async (item) => {
@@ -77,14 +163,40 @@ export const Files = (props: any) => {
 				if (exportFile) {
 					try {
 						const eachConent = await app.vault.adapter.read(exportFile.path);
-						fileContent += exportFile.basename + "\n";
-						fileContent += eachConent + "\n\n\n";
+
+						if (hasProperties(eachConent)) {
+							fileContent += createPropertiesContent(
+								eachConent,
+								exportFile.basename,
+								item,
+								properties,
+								tags
+							);
+						} else {
+							fileContent += "# " + exportFile.basename + "\n";
+							fileContent += eachConent + "\n\n\n";
+						}
 					} catch (e) {
 						console.error(e);
 					}
 				}
 			})
 		);
+
+		let propertiesString = "";
+
+		if (tags.length > 0) {
+			const tagsString = tags.map((tag) => `  - "${tag}"`).join("\n");
+			propertiesString += "tags: \n" + tagsString + "\n";
+		}
+
+		if (properties.length > 0) {
+			propertiesString += createPropertiesString(properties);
+		}
+
+		if (propertiesString !== "") {
+			fileContent = `---\n${propertiesString}---\n\n${fileContent}`;
+		}
 
 		try {
 			await app.vault.create(
