@@ -18,6 +18,7 @@ import {
 } from "@dnd-kit/sortable";
 
 const PROPERTIES_REGEX = /---\n([\s\S]*?)\n---/;
+const MERGED_NOTED_DIRECTORY = "_merged_notes";
 
 export const Files = (props: any) => {
 	const files = props.files as TFile[];
@@ -39,6 +40,7 @@ export const Files = (props: any) => {
 	const [tooltip, setTooltip] = useState("");
 	const [isExcludeProperties, setIsExcludeProperties] = useState(false);
 	const [isExcludeEachNoteName, setIsExcludeEachNoteName] = useState(false);
+	const [isMoveNotes, setIsMoveNotes] = useState(false);
 
 	const getNormalizedTitle = (title?: string) => {
 		if (!title || title.length === 0) {
@@ -69,6 +71,19 @@ export const Files = (props: any) => {
 		}
 
 		return dir + "/";
+	};
+
+	const getMergedNotesFolderName = (): string => {
+		const now = new Date();
+
+		const year = now.getFullYear();
+		const month = String(now.getMonth() + 1).padStart(2, "0"); // +1 because the month begins at 0
+		const day = String(now.getDate()).padStart(2, "0");
+		const hours = String(now.getHours()).padStart(2, "0");
+		const minutes = String(now.getMinutes()).padStart(2, "0");
+		const seconds = String(now.getSeconds()).padStart(2, "0");
+
+		return `${year}${month}${day}T${hours}${minutes}${seconds}`;
 	};
 
 	const getProperties = (content: string) => {
@@ -215,15 +230,49 @@ export const Files = (props: any) => {
 				getDirectoryPath() + getNormalizedTitle(title) + ".md",
 				fileContent
 			);
-			new Notice("Merge completed");
 		} catch (e) {
 			console.error(e);
-			if (e.message === "File already exists") {
-				new Notice(e.message);
+			if (e.message === "File already exists.") {
+				new Notice(e.message, 3000);
 			} else {
 				new Notice("An error occurred while merging notes");
 			}
 		}
+
+		if (isMoveNotes) {
+			await Promise.all(
+				Array.from(items).map(async (item) => {
+					const exportFile = files.find((file) => file.path === item)!;
+
+					if (exportFile) {
+						try {
+							if (!(await app.vault.adapter.exists(MERGED_NOTED_DIRECTORY))) {
+								await app.vault.adapter.mkdir(MERGED_NOTED_DIRECTORY);
+							}
+
+							const mergedNotesFolderName = getMergedNotesFolderName();
+
+							await app.vault.adapter.mkdir(
+								MERGED_NOTED_DIRECTORY + "/" + mergedNotesFolderName
+							);
+
+							await app.vault.rename(
+								exportFile,
+								MERGED_NOTED_DIRECTORY +
+									"/" +
+									mergedNotesFolderName +
+									"/" +
+									exportFile.name
+							);
+						} catch (e) {
+							console.error(e);
+						}
+					}
+				})
+			);
+		}
+
+		new Notice("Merge completed", 3000);
 
 		modal.close();
 	};
@@ -286,6 +335,16 @@ export const Files = (props: any) => {
 						onChange={(e) => setIsExcludeEachNoteName(e.target.checked)}
 					></input>
 					<label htmlFor="isExcludeEachNoteName">exclude each note name</label>
+				</div>
+				<div>
+					<input
+						type="checkbox"
+						id="isMoveNotes"
+						onChange={(e) => setIsMoveNotes(e.target.checked)}
+					></input>
+					<label htmlFor="isMoveNotes">
+						the original notes are moved to the `_merged_notes` directory
+					</label>
 				</div>
 			</div>
 
