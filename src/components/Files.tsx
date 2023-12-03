@@ -37,6 +37,7 @@ export const Files = (props: any) => {
 	);
 	const [showTooltip, setShowTooltip] = useState(false);
 	const [tooltip, setTooltip] = useState("");
+	const [isExcludeProperties, setIsExcludeProperties] = useState(false);
 
 	const getNormalizedTitle = (title?: string) => {
 		if (!title || title.length === 0) {
@@ -194,6 +195,10 @@ export const Files = (props: any) => {
 			propertiesString += createPropertiesString(properties);
 		}
 
+		if (isExcludeProperties) {
+			propertiesString = "";
+		}
+
 		if (propertiesString !== "") {
 			fileContent = `---\n${propertiesString}---\n\n${fileContent}`;
 		}
@@ -258,6 +263,17 @@ export const Files = (props: any) => {
 				</DndContext>
 			</div>
 			<div className="mergeNotesExplain">*drag and drop to change order</div>
+			<div className="mergeNotesMergeOptions">
+				<div>
+					<input
+						type="checkbox"
+						id="isExcludeProperties"
+						onChange={(e) => setIsExcludeProperties(e.target.checked)}
+					></input>
+					<label htmlFor="isExcludeProperties">exclude properties</label>
+				</div>
+			</div>
+
 			<div className="mergeNotesButton">
 				<button onClick={mergeNotes}>Merge notes</button>
 			</div>
