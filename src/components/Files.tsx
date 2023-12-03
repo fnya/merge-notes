@@ -38,6 +38,7 @@ export const Files = (props: any) => {
 	const [showTooltip, setShowTooltip] = useState(false);
 	const [tooltip, setTooltip] = useState("");
 	const [isExcludeProperties, setIsExcludeProperties] = useState(false);
+	const [isExcludeEachNoteName, setIsExcludeEachNoteName] = useState(false);
 
 	const getNormalizedTitle = (title?: string) => {
 		if (!title || title.length === 0) {
@@ -95,7 +96,8 @@ export const Files = (props: any) => {
 		title: string,
 		item: string,
 		properties: any[],
-		tags: any[]
+		tags: any[],
+		isExcludeEachNoteName: boolean
 	) => {
 		let fileContent = "";
 
@@ -127,7 +129,9 @@ export const Files = (props: any) => {
 			}
 		}
 
-		fileContent += `# ${title}\n`;
+		if (!isExcludeEachNoteName) {
+			fileContent += `# ${title}\n`;
+		}
 		fileContent += getExcludePropertiesContent(content) + "\n\n\n";
 
 		return fileContent;
@@ -171,10 +175,13 @@ export const Files = (props: any) => {
 								exportFile.basename,
 								item,
 								properties,
-								tags
+								tags,
+								isExcludeEachNoteName
 							);
 						} else {
-							fileContent += "# " + exportFile.basename + "\n";
+							if (!isExcludeEachNoteName) {
+								fileContent += "# " + exportFile.basename + "\n";
+							}
 							fileContent += eachConent + "\n\n\n";
 						}
 					} catch (e) {
@@ -271,6 +278,14 @@ export const Files = (props: any) => {
 						onChange={(e) => setIsExcludeProperties(e.target.checked)}
 					></input>
 					<label htmlFor="isExcludeProperties">exclude properties</label>
+				</div>
+				<div>
+					<input
+						type="checkbox"
+						id="isExcludeEachNoteName"
+						onChange={(e) => setIsExcludeEachNoteName(e.target.checked)}
+					></input>
+					<label htmlFor="isExcludeEachNoteName">exclude each note name</label>
 				</div>
 			</div>
 
