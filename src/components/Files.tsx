@@ -41,6 +41,7 @@ export const Files = (props: any) => {
 	const [isExcludeProperties, setIsExcludeProperties] = useState(false);
 	const [isExcludeEachNoteName, setIsExcludeEachNoteName] = useState(false);
 	const [isMoveNotes, setIsMoveNotes] = useState(false);
+	const [isNoBackup, setIsNoBackup] = useState(false);
 
 	const getNormalizedTitle = (title?: string) => {
 		if (!title || title.length === 0) {
@@ -272,6 +273,22 @@ export const Files = (props: any) => {
 			);
 		}
 
+		if (isNoBackup) {
+			await Promise.all(
+				Array.from(items).map(async (item) => {
+					const exportFile = files.find((file) => file.path === item)!;
+
+					if (exportFile) {
+						try {
+							await app.vault.delete(exportFile);
+						} catch (e) {
+							console.error(e);
+						}
+					}
+				})
+			);
+		}
+
 		new Notice("Merge completed", 3000);
 
 		modal.close();
@@ -318,7 +335,7 @@ export const Files = (props: any) => {
 					</SortableContext>
 				</DndContext>
 			</div>
-			<div className="mergeNotesExplain">*drag and drop to change order</div>
+			<div className="mergeNotesExplain">*Drag and drop to change order</div>
 			<div className="mergeNotesMergeOptions">
 				<div>
 					<input
@@ -326,7 +343,7 @@ export const Files = (props: any) => {
 						id="isExcludeProperties"
 						onChange={(e) => setIsExcludeProperties(e.target.checked)}
 					></input>
-					<label htmlFor="isExcludeProperties">exclude properties</label>
+					<label htmlFor="isExcludeProperties">Exclude properties</label>
 				</div>
 				<div>
 					<input
@@ -334,16 +351,34 @@ export const Files = (props: any) => {
 						id="isExcludeEachNoteName"
 						onChange={(e) => setIsExcludeEachNoteName(e.target.checked)}
 					></input>
-					<label htmlFor="isExcludeEachNoteName">exclude each note name</label>
+					<label htmlFor="isExcludeEachNoteName">Exclude each note name</label>
 				</div>
 				<div>
 					<input
 						type="checkbox"
 						id="isMoveNotes"
-						onChange={(e) => setIsMoveNotes(e.target.checked)}
+						checked={isMoveNotes}
+						onChange={(e) => {
+							setIsMoveNotes(e.target.checked);
+							setIsNoBackup(false);
+						}}
 					></input>
 					<label htmlFor="isMoveNotes">
-						the original notes are moved to the `_merged_notes` directory
+						The original notes are moved to the `_merged_notes` directory
+					</label>
+				</div>
+				<div>
+					<input
+						type="checkbox"
+						id="isNoBackup"
+						checked={isNoBackup}
+						onChange={(e) => {
+							setIsNoBackup(e.target.checked);
+							setIsMoveNotes(false);
+						}}
+					></input>
+					<label htmlFor="isNoBackup">
+						!!Danger!! Do not back up the original notes
 					</label>
 				</div>
 			</div>
