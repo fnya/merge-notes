@@ -88,8 +88,41 @@ export const Files = (props: any) => {
 	};
 
 	const getProperties = (content: string) => {
-		if (content.match(PROPERTIES_REGEX)) {
-			return parseYaml(content.match(PROPERTIES_REGEX)![1]);
+		const properties = content.match(PROPERTIES_REGEX);
+
+		if (properties) {
+			let tempProperties = properties![1];
+
+			if (tempProperties && tempProperties.contains(",")) {
+				const lines = tempProperties.split("\n");
+				tempProperties = "";
+
+				lines.forEach((line) => {
+					if (line.trim() !== "") {
+						const [key, value] = line.split(":");
+
+						if (value || value !== "") {
+							if (value.includes(",")) {
+								const values = value
+									.split(",")
+									.map((v) =>
+										v.trim().replace("[", "").replace("]", "").replace(/"/g, "")
+									);
+
+								tempProperties += `${key}:`;
+								values.forEach((v) => {
+									tempProperties += `\n  - "${v}"`;
+								});
+								tempProperties += "\n";
+							}
+						} else {
+							tempProperties += `${key}: \n`;
+						}
+					}
+				});
+			}
+
+			return parseYaml(tempProperties);
 		}
 
 		return undefined;
