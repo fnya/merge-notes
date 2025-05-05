@@ -1,10 +1,6 @@
-import { File } from "./File";
-import { TFile, Notice, parseYaml } from "obsidian";
-import { Title } from "./Title";
-import React, { useState } from "react";
 import {
-	DndContext,
 	closestCenter,
+	DndContext,
 	KeyboardSensor,
 	PointerSensor,
 	useSensor,
@@ -16,6 +12,10 @@ import {
 	sortableKeyboardCoordinates,
 	verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { Notice, parseYaml, TFile } from "obsidian";
+import React, { useState } from "react";
+import { File } from "./File";
+import { Title } from "./Title";
 
 const PROPERTIES_REGEX = /---\n([\s\S]*?)\n---/;
 const MERGED_NOTED_DIRECTORY = "_merged_notes";
@@ -99,24 +99,25 @@ export const Files = (props: any) => {
 
 				lines.forEach((line) => {
 					if (line.trim() !== "") {
-						const [key, value] = line.split(":");
+						if (line.includes(",")) {
+							const index = line.indexOf(":");
+							const key = line.substring(0, index).trim();
+							const value = line.substring(index + 1).trim();
 
-						if (value || value !== "") {
-							if (value.includes(",")) {
-								const values = value
-									.split(",")
-									.map((v) =>
-										v.trim().replace("[", "").replace("]", "").replace(/"/g, "")
-									);
+							const values = value
+								.split(",")
+								.map((v) =>
+									v.trim().replace("[", "").replace("]", "").replace(/"/g, "")
+								);
 
-								tempProperties += `${key}:`;
-								values.forEach((v) => {
-									tempProperties += `\n  - "${v}"`;
-								});
-								tempProperties += "\n";
-							}
+							tempProperties += `${key}:`;
+
+							values.forEach((v) => {
+								tempProperties += `\n  - "${v}"`;
+							});
+							tempProperties += "\n";
 						} else {
-							tempProperties += `${key}: \n`;
+							tempProperties += line + "\n";
 						}
 					}
 				});
